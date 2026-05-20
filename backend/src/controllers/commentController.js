@@ -1,14 +1,12 @@
 const Comment = require("../models/Comment");
-
+const Activity = require("../models/Activity");
 const Video = require("../models/Video");
 
 const addComment = async (req, res) => {
   try {
     const { text } = req.body;
 
-    const video = await Video.findById(
-      req.params.videoId
-    );
+    const video = await Video.findById(req.params.videoId);
 
     if (!video) {
       return res.status(404).json({
@@ -25,6 +23,11 @@ const addComment = async (req, res) => {
     video.comments.push(comment._id);
 
     await video.save();
+    await Activity.create({
+      user: req.user._id,
+      type: "comment",
+      video: video._id,
+    });
 
     res.status(201).json(comment);
   } catch (error) {

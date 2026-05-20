@@ -1,9 +1,9 @@
 const User = require("../models/User");
+const Activity = require("../models/Activity");
 
 const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id)
-      .select("-password");
+    const user = await User.findById(req.user._id).select("-password");
 
     res.status(200).json(user);
   } catch (error) {
@@ -15,9 +15,7 @@ const getMe = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(
-      req.params.id
-    ).select("-password");
+    const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
       return res.status(404).json({
@@ -35,9 +33,7 @@ const getUserProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const user = await User.findById(
-      req.user._id
-    );
+    const user = await User.findById(req.user._id);
 
     if (!user) {
       return res.status(404).json({
@@ -45,8 +41,7 @@ const updateProfile = async (req, res) => {
       });
     }
 
-    user.username =
-      req.body.username || user.username;
+    user.username = req.body.username || user.username;
 
     user.bio = req.body.bio || user.bio;
 
@@ -62,13 +57,9 @@ const updateProfile = async (req, res) => {
 
 const followUser = async (req, res) => {
   try {
-    const currentUser = await User.findById(
-      req.user._id
-    );
+    const currentUser = await User.findById(req.user._id);
 
-    const targetUser = await User.findById(
-      req.params.id
-    );
+    const targetUser = await User.findById(req.params.id);
 
     if (!targetUser) {
       return res.status(404).json({
@@ -76,19 +67,12 @@ const followUser = async (req, res) => {
       });
     }
 
-    const alreadyFollowing =
-      currentUser.following.includes(
-        targetUser._id
-      );
+    const alreadyFollowing = currentUser.following.includes(targetUser._id);
 
     if (alreadyFollowing) {
-      currentUser.following.pull(
-        targetUser._id
-      );
+      currentUser.following.pull(targetUser._id);
 
-      targetUser.followers.pull(
-        currentUser._id
-      );
+      targetUser.followers.pull(currentUser._id);
 
       await currentUser.save();
 
@@ -99,13 +83,9 @@ const followUser = async (req, res) => {
       });
     }
 
-    currentUser.following.push(
-      targetUser._id
-    );
+    currentUser.following.push(targetUser._id);
 
-    targetUser.followers.push(
-      currentUser._id
-    );
+    targetUser.followers.push(currentUser._id);
 
     await currentUser.save();
 
@@ -113,6 +93,11 @@ const followUser = async (req, res) => {
 
     res.status(200).json({
       message: "User followed",
+    });
+    await Activity.create({
+      user: req.user._id,
+      type: "follow",
+      targetUser: targetUser._id,
     });
   } catch (error) {
     res.status(500).json({

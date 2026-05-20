@@ -4,61 +4,58 @@ const videoSchema = mongoose.Schema(
   {
     caption: {
       type: String,
-      required: true
+      required: true,
     },
 
     videoUrl: {
       type: String,
-      required: true
+      required: true,
     },
 
     publicId: {
       type: String,
-      required: true
+      required: true,
     },
 
     thumbnail: {
       type: String,
-      default: ""
+      default: "",
     },
 
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
 
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      }
+        ref: "User",
+      },
     ],
 
     comments: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment"
-      }
+        ref: "Comment",
+      },
     ],
 
     shares: {
       type: Number,
-      default: 0
+      default: 0,
     },
 
     views: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
 
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
-module.exports = mongoose.model(
-  "Video",
-  videoSchema
-);
+module.exports = mongoose.model("Video", videoSchema);

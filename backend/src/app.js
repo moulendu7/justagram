@@ -9,6 +9,9 @@ const saveRoutes = require("./routes/saveRoutes");
 const searchRoutes = require("./routes/searchRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const activityRoutes = require("./routes/activityRoutes");
+const messageRoutes = require(
+  "./routes/messageRoutes"
+);
 
 const app = express();
 
@@ -27,6 +30,10 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/saves", saveRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/activity", activityRoutes);
+app.use(
+  "/api/messages",
+  messageRoutes
+);
 
 app.use(notFound);
 app.use(errorHandler);

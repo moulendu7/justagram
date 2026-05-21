@@ -9,10 +9,9 @@ const saveRoutes = require("./routes/saveRoutes");
 const searchRoutes = require("./routes/searchRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const activityRoutes = require("./routes/activityRoutes");
-const messageRoutes = require(
-  "./routes/messageRoutes"
-);
-
+const messageRoutes = require("./routes/messageRoutes");
+const conversationRoutes = require("./routes/conversationRoutes");
+const groupRoutes = require("./routes/groupRoutes");
 const app = express();
 
 app.use(express.json());
@@ -30,10 +29,9 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/saves", saveRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/activity", activityRoutes);
-app.use(
-  "/api/messages",
-  messageRoutes
-);
+app.use("/api/messages", messageRoutes);
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/groups", groupRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

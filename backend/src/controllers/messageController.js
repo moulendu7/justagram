@@ -1,15 +1,33 @@
 const Message = require("../models/Message");
+const Conversation = require("../models/Conversation");
 
 const sendMessage = async (req, res) => {
   try {
     const { receiverId, text } = req.body;
     const message = await Message.create({
       sender: req.user._id,
-
       receiver: receiverId,
-
       text,
     });
+    let conversation = await Conversation.findOne({
+      participants: {
+        $all: [req.user._id, receiverId],
+      },
+    });
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [req.user._id, receiverId],
+        lastMessage: message._id,
+        unreadCounts: {
+          [receiverId]: 1,
+        },
+      });
+    } else {
+      conversation.lastMessage = message._id;
+      const currentUnread = conversation.unreadCounts.get(receiverId) || 0;
+      conversation.unreadCounts.set(receiverId, currentUnread + 1);
+      await conversation.save();
+    }
     res.status(201).json(message);
   } catch (error) {
     res.status(500).json({
@@ -87,5 +105,5 @@ module.exports = {
   sendMessage,
   getConversation,
   markAsSeen,
-  deleteMessageForEveryone
+  deleteMessageForEveryone,
 };

@@ -12,6 +12,7 @@ const activityRoutes = require("./routes/activityRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const conversationRoutes = require("./routes/conversationRoutes");
 const groupRoutes = require("./routes/groupRoutes");
+const blockRoutes = require("./routes/blockRoutes");
 const app = express();
 
 app.use(express.json());
@@ -32,6 +33,7 @@ app.use("/api/activity", activityRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/groups", groupRoutes);
+app.use("/api/block", blockRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

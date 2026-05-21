@@ -12,4 +12,6 @@ router.post("/", protect, sendMessage);
 router.get("/:userId", protect, getConversation);
 router.put("/seen/:id", protect, markAsSeen);
 router.delete("/:id", protect, deleteMessageForEveryone);
+router.put("/reaction/:id", protect, reactToMessage);
+
 module.exports = router;

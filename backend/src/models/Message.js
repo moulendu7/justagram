@@ -32,6 +32,17 @@ const messageSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    reactions: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        emoji: {
+          type: String,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

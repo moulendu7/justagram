@@ -22,10 +22,10 @@ const messageSchema = mongoose.Schema(
       required: true,
     },
 
-    isSeen: {
-      type: Boolean,
-
-      default: false,
+    status: {
+      type: String,
+      enum: ["sent", "delivered", "seen"],
+      default: "sent",
     },
 
     isDeleted: {

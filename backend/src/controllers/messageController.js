@@ -64,7 +64,7 @@ const markAsSeen = async (req, res) => {
         message: "Message not found",
       });
     }
-    message.isSeen = true;
+    message.status = "seen";
     await message.save();
     res.status(200).json({
       message: "Message marked as seen",

@@ -1,6 +1,7 @@
 const Save = require("../models/Save");
 const Video = require("../models/Video");
 const Activity = require("../models/Activity");
+const updateEngagementScore = require("../utils/updateEngagementScore");
 
 const toggleSave = async (req, res) => {
   try {
@@ -33,6 +34,7 @@ const toggleSave = async (req, res) => {
       type: "save",
       video: video._id,
     });
+    await updateEngagementScore(video._id);
     res.status(201).json({
       message: "Video saved",
 

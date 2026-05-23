@@ -1,6 +1,7 @@
 const Comment = require("../models/Comment");
 const Activity = require("../models/Activity");
 const Video = require("../models/Video");
+const updateEngagementScore = require("../utils/updateEngagementScore");
 
 const addComment = async (req, res) => {
   try {
@@ -23,6 +24,9 @@ const addComment = async (req, res) => {
     video.comments.push(comment._id);
 
     await video.save();
+    await updateEngagementScore(
+  video._id
+);
     await Activity.create({
       user: req.user._id,
       type: "comment",

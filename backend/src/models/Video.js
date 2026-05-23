@@ -51,6 +51,10 @@ const videoSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    engagementScore: {
+      type: Number,
+      default: 0,
+    },
   },
 
   {

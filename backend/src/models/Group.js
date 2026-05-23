@@ -14,9 +14,28 @@ const groupSchema = mongoose.Schema(
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,
+
         ref: "User",
       },
     ],
+    moderators: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+
+        ref: "User",
+      },
+    ],
+    mutedUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+
+        ref: "User",
+      },
+    ],
+    adminOnlyMessages: {
+      type: Boolean,
+      default: false,
+    },
     groupAvatar: {
       type: String,
       default: "",

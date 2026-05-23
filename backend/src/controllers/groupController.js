@@ -207,7 +207,124 @@ const deleteGroup = async (req, res) => {
     });
   }
 };
+const addModerator = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const group = await Group.findById(req.params.groupId);
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found",
+      });
+    }
+    if (group.admin.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        message: "Only admin allowed",
+      });
+    }
+    if (group.moderators.includes(userId)) {
+      return res.status(400).json({
+        message: "Already moderator",
+      });
+    }
+    group.moderators.push(userId);
+    await group.save();
+    res.status(200).json({
+      message: "Moderator added",
 
+      group,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const removeModerator = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const group = await Group.findById(req.params.groupId);
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found",
+      });
+    }
+    if (group.admin.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        message: "Only admin allowed",
+      });
+    }
+    group.moderators = group.moderators.filter(
+      (mod) => mod.toString() !== userId,
+    );
+    await group.save();
+    res.status(200).json({
+      message: "Moderator removed",
+      group,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const muteUser = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const group = await Group.findById(req.params.groupId);
+
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found",
+      });
+    }
+    const isModerator = group.moderators.includes(req.user._id);
+    const isAdmin = group.admin.toString() === req.user._id.toString();
+    if (!isAdmin && !isModerator) {
+      return res.status(401).json({
+        message: "Not authorized",
+      });
+    }
+    if (group.mutedUsers.includes(userId)) {
+      return res.status(400).json({
+        message: "Already muted",
+      });
+    }
+    group.mutedUsers.push(userId);
+    await group.save();
+    res.status(200).json({
+      message: "User muted",
+      group,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const toggleAdminOnlyMessages = async (req, res) => {
+  try {
+    const group = await Group.findById(req.params.groupId);
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found",
+      });
+    }
+    if (group.admin.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        message: "Only admin allowed",
+      });
+    }
+    group.adminOnlyMessages = !group.adminOnlyMessages;
+    await group.save();
+    res.status(200).json({
+      adminOnlyMessages: group.adminOnlyMessages,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   createGroup,
   getUserGroups,
@@ -218,4 +335,8 @@ module.exports = {
   promoteAdmin,
   leaveGroup,
   deleteGroup,
+  addModerator,
+  removeModerator,
+  muteUser,
+  toggleAdminOnlyMessages,
 };

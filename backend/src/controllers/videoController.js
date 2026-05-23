@@ -3,6 +3,7 @@ const cloudinary = require("../config/cloudinary");
 const Video = require("../models/Video");
 const Comment = require("../models/Comment");
 const Activity = require("../models/Activity");
+const updateEngagementScore = require("../utils/updateEngagementScore");
 
 const uploadVideo = async (req, res) => {
   try {
@@ -33,7 +34,6 @@ const uploadVideo = async (req, res) => {
     };
 
     const result = await streamUpload();
-
     const video = await Video.create({
       caption: req.body.caption,
 
@@ -61,7 +61,10 @@ const getFeed = async (req, res) => {
     const skip = (page - 1) * limit;
     const videos = await Video.find()
       .populate("user", "username avatar")
-      .sort({ createdAt: -1 })
+      .sort({
+        engagementScore: -1,
+        createdAt: -1,
+      })
       .skip(skip)
       .limit(limit);
     const totalVideos = await Video.countDocuments();
@@ -73,6 +76,38 @@ const getFeed = async (req, res) => {
       totalVideos,
       videos,
     });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const getTrendingVideos = async (req, res) => {
+  try {
+    const videos = await Video.find()
+      .populate("user", "username avatar")
+      .sort({
+        engagementScore: -1,
+        views: -1,
+      })
+      .limit(20);
+    res.status(200).json(videos);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const getExploreVideos = async (req, res) => {
+  try {
+    const videos = await Video.find()
+      .populate("user", "username avatar")
+      .sort({
+        createdAt: -1,
+      })
+      .limit(30);
+    const shuffled = videos.sort(() => 0.5 - Math.random());
+    res.status(200).json(shuffled);
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -94,6 +129,7 @@ const incrementView = async (req, res) => {
       video: video._id,
     });
     await video.save();
+    await updateEngagementScore(video._id);
     res.status(200).json({
       message: "View counted",
       views: video.views,
@@ -127,6 +163,7 @@ const toggleLike = async (req, res) => {
       video: video._id,
     });
     await video.save();
+    await updateEngagementScore(video._id);
     res.status(200).json({
       message: "Video liked",
     });
@@ -182,6 +219,7 @@ const incrementShare = async (req, res) => {
       video: video._id,
     });
     await video.save();
+    await updateEngagementScore(video._id);
     res.status(200).json({
       message: "Share counted",
 
@@ -201,4 +239,7 @@ module.exports = {
   deleteVideo,
   incrementView,
   incrementShare,
+  getTrendingVideos,
+  getExploreVideos,
+  
 };

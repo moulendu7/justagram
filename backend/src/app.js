@@ -13,6 +13,8 @@ const messageRoutes = require("./routes/messageRoutes");
 const conversationRoutes = require("./routes/conversationRoutes");
 const groupRoutes = require("./routes/groupRoutes");
 const blockRoutes = require("./routes/blockRoutes");
+const callRoutes = require("./routes/callRoutes");
+
 const app = express();
 
 app.use(express.json());
@@ -34,6 +36,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/block", blockRoutes);
+app.use("/api/calls", callRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

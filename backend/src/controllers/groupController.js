@@ -72,10 +72,150 @@ const getGroupMessages = async (req, res) => {
     });
   }
 };
+const addMember = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const group = await Group.findById(req.params.groupId);
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found",
+      });
+    }
+    if (group.admin.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        message: "Only admin can add members",
+      });
+    }
+    if (group.members.includes(userId)) {
+      return res.status(400).json({
+        message: "User already in group",
+      });
+    }
+    group.members.push(userId);
+    await group.save();
+    res.status(200).json({
+      message: "Member added",
+
+      group,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const removeMember = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const group = await Group.findById(req.params.groupId);
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found",
+      });
+    }
+    if (group.admin.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        message: "Only admin can remove members",
+      });
+    }
+    group.members = group.members.filter(
+      (member) => member.toString() !== userId,
+    );
+    await group.save();
+    res.status(200).json({
+      message: "Member removed",
+      group,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const promoteAdmin = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const group = await Group.findById(req.params.groupId);
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found",
+      });
+    }
+    if (group.admin.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        message: "Only admin can promote",
+      });
+    }
+    group.admin = userId;
+    await group.save();
+    res.status(200).json({
+      message: "Admin updated",
+
+      group,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const leaveGroup = async (req, res) => {
+  try {
+    const group = await Group.findById(req.params.groupId);
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found",
+      });
+    }
+    group.members = group.members.filter(
+      (member) => member.toString() !== req.user._id.toString(),
+    );
+    await group.save();
+    res.status(200).json({
+      message: "Left group",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const deleteGroup = async (req, res) => {
+  try {
+    const group = await Group.findById(req.params.groupId);
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found",
+      });
+    }
+    if (group.admin.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        message: "Only admin can delete",
+      });
+    }
+    await GroupMessage.deleteMany({
+      group: group._id,
+    });
+    await group.deleteOne();
+    res.status(200).json({
+      message: "Group deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   createGroup,
   getUserGroups,
   sendGroupMessage,
   getGroupMessages,
+  addMember,
+  removeMember,
+  promoteAdmin,
+  leaveGroup,
+  deleteGroup,
 };

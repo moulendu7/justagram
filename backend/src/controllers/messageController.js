@@ -127,10 +127,65 @@ const reactToMessage = async (req, res) => {
     });
   }
 };
+const searchMessages = async (req, res) => {
+  try {
+    const query = req.query.q;
+    if (!query) {
+      return res.status(400).json({
+        message: "Search query required",
+      });
+    }
+    const messages = await Message.find({
+      text: {
+        $regex: query,
+        $options: "i",
+      },
+      $or: [
+        {
+          sender: req.user._id,
+        },
+        {
+          receiver: req.user._id,
+        },
+      ],
+    })
+      .populate("sender receiver", "username avatar")
+      .sort({
+        createdAt: -1,
+      });
+    res.status(200).json(messages);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const togglePinMessage = async (req, res) => {
+  try {
+    const message = await Message.findById(req.params.id);
+    if (!message) {
+      return res.status(404).json({
+        message: "Message not found",
+      });
+    }
+    message.isPinned = !message.isPinned;
+    await message.save();
+    res.status(200).json({
+      message: message.isPinned ? "Message pinned" : "Message unpinned",
+      isPinned: message.isPinned,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   sendMessage,
   getConversation,
   markAsSeen,
   deleteMessageForEveryone,
   reactToMessage,
+  searchMessages,
+  togglePinMessage,
 };

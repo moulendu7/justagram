@@ -43,6 +43,10 @@ const messageSchema = mongoose.Schema(
         },
       },
     ],
+    isPinned: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

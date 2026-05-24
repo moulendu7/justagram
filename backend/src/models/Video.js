@@ -6,7 +6,11 @@ const videoSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-
+    hashtags: [
+      {
+        type: String,
+      },
+    ],
     videoUrl: {
       type: String,
       required: true,

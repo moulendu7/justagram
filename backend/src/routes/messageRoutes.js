@@ -7,6 +7,7 @@ const {
   deleteMessageForEveryone,
   searchMessages,
   togglePinMessage,
+  reactToMessage
 } = require("../controllers/messageController");
 const checkBlock = require("../middleware/blockMiddleware");
 

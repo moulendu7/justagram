@@ -1,8 +1,8 @@
-require("./config/env");
+// require("./");
 const http = require("http");
 const app = require("./app");
 const connectDB = require("./config/db");
-const { initSocket } = require("./socket/socket");
+const { initSocket } = require("../socket/socket");
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 

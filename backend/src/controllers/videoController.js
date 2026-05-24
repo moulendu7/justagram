@@ -4,6 +4,8 @@ const Video = require("../models/Video");
 const Comment = require("../models/Comment");
 const Activity = require("../models/Activity");
 const updateEngagementScore = require("../utils/updateEngagementScore");
+const Hashtag = require("../models/Hashtag");
+const extractHashtags = require("../utils/extractHashtags");
 
 const uploadVideo = async (req, res) => {
   try {
@@ -34,16 +36,27 @@ const uploadVideo = async (req, res) => {
     };
 
     const result = await streamUpload();
+    const hashtags = extractHashtags(req.body.caption);
     const video = await Video.create({
       caption: req.body.caption,
-
+      hashtags,
       videoUrl: result.secure_url,
-
       publicId: result.public_id,
-
       user: req.user._id,
     });
-
+    for (const tag of hashtags) {
+      const existingTag = await Hashtag.findOne({
+        tag,
+      });
+      if (existingTag) {
+        existingTag.usageCount += 1;
+        await existingTag.save();
+      } else {
+        await Hashtag.create({
+          tag,
+        });
+      }
+    }
     res.status(201).json(video);
   } catch (error) {
     res.status(500).json({
@@ -241,5 +254,4 @@ module.exports = {
   incrementShare,
   getTrendingVideos,
   getExploreVideos,
-  
 };

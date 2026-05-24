@@ -1,5 +1,5 @@
 const socketIO = require("socket.io");
-const User = require("../models/User");
+const User = require("../src/models/User");
 let io;
 const onlineUsers = new Map();
 

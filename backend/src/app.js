@@ -19,8 +19,8 @@ const rateLimit = require("express-rate-limit");
 const xss = require("xss-clean");
 const mongoSanitize = require("express-mongo-sanitize");
 const hpp = require("hpp");
-const cors = require("cors");
-
+const analyticsRoutes = require("./routes/analyticsRoutes");
+const hashtagRoutes = require("./routes/hashtagRoutes");
 const app = express();
 
 app.use(express.json());
@@ -58,6 +58,8 @@ app.use("/api/conversations", conversationRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/block", blockRoutes);
 app.use("/api/calls", callRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/hashtags", hashtagRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
